@@ -39,6 +39,49 @@ def scalebar(self, dx, units, width_fraction, location='lower left', color='yell
   self.add_artist(bar)
   return bar
 
+def break_spine(self, spine, color='k', d=0.015):
+
+    kwargs = {
+      'transform': self.transAxes, 
+      'color': color, 
+      'clip_on': False, 
+      'linewidth': matplotlib.rcParams['axes.linewidth'],
+    }
+
+    ax_h, ax_w = self.bbox.height, self.bbox.width
+    h_w = ax_h/ax_w
+    w_h = ax_w/ax_h
+    y_bottom = (-d, +d)
+    y_top = 1 - d, 1 + d
+
+    if spine in ['left', 'right', 'top', 'bottom']:
+
+      self.spines[spine].set_visible(False)
+
+      if spine == 'right':
+
+        x = (1 - d*h_w, 1 + d*h_w)
+        self.plot(x, y_bottom, **kwargs)
+        self.plot(x, y_top, **kwargs)
+        self.tick_params(
+          axis='y',
+          which='both',
+          right=False,
+          labelright=False,
+        )
+      
+      elif spine == 'left':
+
+        x = (-d*h_w, +d*h_w)
+        self.plot(x, y_bottom, **kwargs)
+        self.plot(x, y_top, **kwargs)
+        self.tick_params(
+          axis='y',
+          which='both',
+          left=False,
+          labelleft=False,
+        )
+
 
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
