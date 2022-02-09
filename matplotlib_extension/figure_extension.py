@@ -9,6 +9,7 @@ class Box:
 		self.figure = figure
 		self.children = []
 		self.showing_annotations = False
+		self.post_update_functions = []
 
 	def offset_x(self):
 		if not hasattr(self, '_offset_x'):
@@ -107,6 +108,8 @@ class HBox(Box):
 			offset_x = child.edge_right_x
 			if issubclass(type(child), Box):
 				child.configure_children()
+		for fun in self.post_update_functions:
+			fun()
 
 class VBox(Box):
 
@@ -124,7 +127,8 @@ class VBox(Box):
 			offset_y = child.edge_top_y
 			if issubclass(type(child), Box):
 				child.configure_children()
-
+		for fun in self.post_update_functions:
+			fun()
 
 def ax(self, width=1.0, height=1.0, spacings=0.25, left=None, right=None, top=None, bottom=None):
 
@@ -137,6 +141,7 @@ def ax(self, width=1.0, height=1.0, spacings=0.25, left=None, right=None, top=No
 		)
 		ax._offset_x = 0
 		ax._offset_y = 0
+		ax.post_update_functions = []
 
 		# Important to initialize spacings as something (e.g. 0.0)
 		ax.adjust(width=width, height=height, spacings=spacings, left=left, right=right, top=top, bottom=bottom)
@@ -147,6 +152,8 @@ def clip(self):
 
 	for ax in self.axes:
 		ax.adjust()
+		for fun in ax.post_update_functions:
+			fun()
 
 	width = max([ax.edge_right_x() for ax in self.axes])
 	height = max([ax.edge_top_y() for ax in self.axes])

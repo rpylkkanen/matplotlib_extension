@@ -255,8 +255,10 @@ def annotate_text(self):
 	kwargs = dict(
 		ha='center',
 		va='center',
-		fontsize='xx-small',
+		color='k',
+		fontsize='x-small',
 		transform=self.transAxes,
+		bbox=dict(fc='white', alpha=0.75)
 	)
 
 	texts = []
@@ -471,6 +473,9 @@ def adjust(self, width=None, height=None, spacings=None, left=None, right=None, 
 	divider = Divider(f, (0, 0, 1, 1), h, v, aspect=False)
 	self.set_position(divider.get_position())
 	self.set_axes_locator(divider.new_locator(nx=1, ny=1))
+
+	for fun in self.post_update_functions:
+		fun()
 
 def random_data(self, color=None):
 	n = 10
