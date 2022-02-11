@@ -31,7 +31,7 @@ def set_top_label(self, text):
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, transform=transform)
 
-def scalebar(self, dx, units, width_fraction, location='lower left', color='yellow'):
+def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffeb3b", kwargs={}):
 		bar = ScaleBar(
 				dx,
 				units,
@@ -39,6 +39,8 @@ def scalebar(self, dx, units, width_fraction, location='lower left', color='yell
 				location=location,
 				width_fraction=width_fraction,
 				box_alpha=0.0,
+				# font_properties=dict(size='small'),
+				**kwargs
 		)
 		self.add_artist(bar)
 		return bar
@@ -46,21 +48,20 @@ def scalebar(self, dx, units, width_fraction, location='lower left', color='yell
 def break_spine(self, spine, aspect=1/1, color='k', d=0.015):
 
 		if not hasattr(self, '_broken_axes'):
-				self._broken_axes = None
-				self._broken_axes_aspect = None
-				self._broken_axes_spine = None
-				self._broken_axes_color = None
-				self._broken_axes_d = None
+				self._broken_axes = {
+					'left': {
+						'lines': [], 
+					},
+					'right': {
+						'lines': [],
+					},
+				}
 		else:
 				if self._broken_axes is not None:
-						for line in self._broken_axes:
+						for line in self._broken_axes[spine]['lines']:
 								if line in self._children:
 										self._children.remove(line)
-						self._broken_axes = None
-						self._broken_axes_aspect = None
-						self._broken_axes_spine = None
-						self._broken_axes_color = None
-						self._broken_axes_d = None
+						self._broken_axes[spine]['lines'] = []
 
 		if hasattr(self, 'get_width') and hasattr(self, 'get_height'):
 			aspect = self.get_height()/self.get_width()
@@ -111,11 +112,8 @@ def break_spine(self, spine, aspect=1/1, color='k', d=0.015):
 						))
 						lines.append(line2)
 
-				self._broken_axes = lines
-				self._broken_axes_aspect = aspect
-				self._broken_axes_spine = spine
-				self._broken_axes_color = color
-				self._broken_axes_d = d
+				self._broken_axes[spine]['lines'] = lines
+
 
 def set_width(self, width, adjust=True):
 	if width is not None:

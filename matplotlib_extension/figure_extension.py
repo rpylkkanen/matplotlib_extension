@@ -155,8 +155,14 @@ def clip(self):
 		for fun in ax.post_update_functions:
 			fun()
 
-	width = max([ax.edge_right_x() for ax in self.axes])
-	height = max([ax.edge_top_y() for ax in self.axes])
+	width, height = 0.0, 0.0
+	widths = [ax.edge_right_x() for ax in self.axes]
+	if len(widths):
+		width = max(widths)
+
+	heights = [ax.edge_top_y() for ax in self.axes]
+	if len(heights):
+		height = max(heights)
 
 	self.set_size_inches(width, height)
 
