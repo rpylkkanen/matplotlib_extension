@@ -23,13 +23,13 @@ def set_panel_label(self, text):
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, weight=weight, transform=transform)
 
-def set_top_label(self, text):
+def set_top_label(self, text, kwargs={}):
 		x = 0.5
 		y = 1.0
 		ha = 'center'
 		va = 'bottom'
 		transform = self.transAxes
-		self.text(x, y, text, ha=ha, va=va, transform=transform)
+		self.text(x, y, text, ha=ha, va=va, transform=transform, **kwargs)
 
 def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffeb3b", kwargs={}):
 		bar = ScaleBar(
@@ -45,7 +45,7 @@ def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffe
 		self.add_artist(bar)
 		return bar
 
-def break_spine(self, spine, aspect=1/1, color='k', d=0.015):
+def break_spine(self, spine, aspect=1/1, color='k', d=0.015, top=True, bottom=True):
 
 		if not hasattr(self, '_broken_axes'):
 				self._broken_axes = {
@@ -98,19 +98,20 @@ def break_spine(self, spine, aspect=1/1, color='k', d=0.015):
 						self.set_yticks([])
 
 				if x is not None:
-
-						line1 = self.add_artist(Line2D(
-							x,
-							y_top,
-							**kwargs,
-						))
-						lines.append(line1)
-						line2 = self.add_artist(Line2D(
-							x,
-							y_bottom,
-							**kwargs
-						))
-						lines.append(line2)
+						if top:
+							line1 = self.add_artist(Line2D(
+								x,
+								y_top,
+								**kwargs,
+							))
+							lines.append(line1)
+						if bottom:
+							line2 = self.add_artist(Line2D(
+								x,
+								y_bottom,
+								**kwargs
+							))
+							lines.append(line2)
 
 				self._broken_axes[spine]['lines'] = lines
 
