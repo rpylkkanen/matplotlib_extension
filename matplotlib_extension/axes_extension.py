@@ -15,10 +15,10 @@ def zoom(self, fraction):
 		self.set_ylim(ymin=ymax*y2, ymax=ymax*y1)
 
 def set_panel_label(self, text):
-		x = 0.0
-		y = 1.0
-		ha = 'right'
-		va = 'bottom'
+		x = - self.left()/self.width()
+		y = 1.0 + self.top()/self.height()
+		ha = 'left'
+		va = 'top'
 		weight = 'semibold'
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, weight=weight, transform=transform)
@@ -482,6 +482,75 @@ def random_data(self, color=None):
 	y = numpy.random.randn(1, n).flatten()
 	self.plot(x, y, 'o-', mfc='white', color=color)
 
+
+def hexagon(self, x, y, width=1.0, height=1.0, width_fill=1.0, height_fill=1.0, perspective=0.25, xpad=0.2, ypad=0.2,line_color='k', top_color="#9e9e9e", bottom_color="#616161", alpha=1.0):
+
+	# Coords
+	x1, x2, x3, x4 = x - width/2, x - width/4, x + width/4, x + width/2
+	y1, y2, y3, y4, y5 = y - height, y - height/2, y, y + height/2, y + height
+	
+	_x = [x1, x2, x3, x4]
+
+	kwargs = dict(alpha=alpha, linewidth=matplotlib.rcParams['axes.linewidth'])
+
+	# Fills
+	self.fill_between(_x, [y4, y3 + height*perspective, y3 + height*perspective, y4], [y4, y5 - height*perspective, y5 - height*perspective, y4], color=top_color, **kwargs)
+
+	self.fill_between(_x, [y4, y3 + height*perspective, y3 + height*perspective, y4], [y2, y1 + height*perspective, y1 + height*perspective, y2], color=bottom_color, **kwargs)
+
+	
+	# Top     /^^\
+	# self.plot(x, [y4, y5 - height*perspective, y5 - height*perspective, y4], color=line_color, **kwargs)
+	
+	# Top     \__/
+	# self.plot(x, [y4, y3 + height*perspective, y3 + height*perspective, y4], color=line_color, **kwargs)
+	
+	# Bottom  \__/
+	# self.plot(x, [y2, y1 + height*perspective, y1 + height*perspective, y2], color=line_color, **kwargs)
+	
+	# Center ||  ||
+	# self.vlines([x1, x4], [y2, y2], [y4, y4], color=line_color, **kwargs)
+
+	result = {
+		'left_x': x1,
+		'center_x': x,
+		'right_x': x4,
+		'left_center_y': numpy.average([y4, y2]),
+		'left_top_y': y4,
+		'left_bottom_y': y2,
+		'right_center_y': numpy.average([y4, y2]),
+		'right_top_y': y4,
+		'right_bottom_y': y2,
+		'top_y': y5 - height*perspective,
+		'bottom_y': y1 + height*perspective,
+		'width': width,
+		'height': height,
+	}
+
+	return result
+
+def cylinder(self, x0, y0, width, height, top_height=None, top_color="#e0e0e0", side_color="#9e9e9e", edge_color=None, linewidth=matplotlib.rcParams['axes.linewidth'], zorder=0):
+	
+	top_height = top_height or 0.25
+
+	x = numpy.linspace(-1.0, 1.0, 1000)
+	y = numpy.sqrt(1.0 ** 2 - x ** 2)
+	x *= width/2
+	x += x0
+	y *= top_height
+
+	y1 = y0 + y + height/2 - top_height
+	y2 = y0 - y + height/2 - top_height
+	y3 = y0 - y - height/2 + top_height
+
+	self.fill_between(x, y2, y1, color=top_color, zorder=zorder, linewidth=linewidth, ec=edge_color)
+	self.fill_between(x, y3, y2, color=side_color, zorder=zorder, linewidth=linewidth, ec=edge_color)
+	# self.plot(x, y1, '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
+	# self.plot(x, y2, '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
+	# self.plot(x, y3, '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
+	# self.plot([x[0]]*2, [y2[0], y3[0]], '-', color=edge_color, zorder=zorder+0.5)
+	# self.plot([x[-1]]*2, [y2[-1], y3[-1]], '-', color=edge_color, zorder=zorder+0.5)
+
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
 for name, f in functions.items():
@@ -491,3 +560,5 @@ for name, f in functions.items():
 		else:
 				print(f'Extending {target} with .{name}{signature(f)}')
 				setattr(target, name, f)
+
+
