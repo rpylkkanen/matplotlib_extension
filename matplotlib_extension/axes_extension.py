@@ -38,7 +38,7 @@ def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffe
 				color=color,
 				location=location,
 				width_fraction=width_fraction,
-				box_alpha=0.0,
+				# box_alpha=0.0,
 				# font_properties=dict(size='small'),
 				**kwargs
 		)
