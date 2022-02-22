@@ -31,7 +31,7 @@ def set_top_label(self, text, kwargs={}):
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, transform=transform, **kwargs)
 
-def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffeb3b", kwargs={}):
+def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffeb3b", kwargs={'box_alpha': 0.0}):
 		bar = ScaleBar(
 				dx,
 				units,
