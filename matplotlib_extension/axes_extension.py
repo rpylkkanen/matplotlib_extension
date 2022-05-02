@@ -548,8 +548,8 @@ def cylinder(self, x0, y0, width, height, top_height=None, top_color="#e0e0e0", 
 	self.plot(x, y1, '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
 	self.plot(x, y2, '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
 	self.plot(x, y3, '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
-	self.plot([x[0]]*2, [y2[0], y3[0]], '-', color=edge_color, zorder=zorder+0.5)
-	self.plot([x[-1]]*2, [y2[-1], y3[-1]], '-', color=edge_color, zorder=zorder+0.5)
+	self.plot([x[0]]*2, [y2[0], y3[0]], '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
+	self.plot([x[-1]]*2, [y2[-1], y3[-1]], '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
 
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
