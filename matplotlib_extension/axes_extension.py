@@ -551,6 +551,73 @@ def cylinder(self, x0, y0, width, height, top_height=None, top_color="#e0e0e0", 
 	self.plot([x[0]]*2, [y2[0], y3[0]], '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
 	self.plot([x[-1]]*2, [y2[-1], y3[-1]], '-', color=edge_color, zorder=zorder+0.5, lw=linewidth)
 
+def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
+
+  scale = min([self.width(), self.height()])
+
+  rx = r * numpy.ptp(self.get_xlim()) / (self.width() / scale)
+  ry = r * numpy.ptp(self.get_ylim()) / (self.height() / scale)
+
+  # calculate the angle
+  theta = numpy.arctan2(xy2[1] - xy1[1], xy2[0] - xy1[0])
+
+  # arc1 centre
+  x11 = xy1[0] + rx * numpy.cos(theta)
+  y11 = xy1[1] + ry * numpy.sin(theta)
+
+  # arc2 centre
+  x22 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) - rx * numpy.cos(theta)
+  y22 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) - ry * numpy.sin(theta)
+
+  # arc3 centre
+  x33 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) + rx * numpy.cos(theta)
+  y33 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) + ry * numpy.sin(theta)
+
+  # arc4 centre
+  x44 = xy2[0] - rx * numpy.cos(theta)
+  y44 = xy2[1] - ry * numpy.sin(theta)
+
+  # prepare the rotated
+  q = numpy.linspace(theta, theta + numpy.pi/2.0, 50)
+
+  # reverse q
+  # t = np.flip(q) # this command is not supported by lower version of numpy
+  t = q[::-1]
+
+  # arc coordinates
+  arc1x = rx * numpy.cos(t + numpy.pi/2.0) + x11
+  arc1y = ry * numpy.sin(t + numpy.pi/2.0) + y11
+
+  arc2x = rx * numpy.cos(q - numpy.pi/2.0) + x22
+  arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
+
+  arc3x = rx * numpy.cos(q + numpy.pi) + x33
+  arc3y = ry * numpy.sin(q + numpy.pi) + y33
+
+  arc4x = rx * numpy.cos(t) + x44
+  arc4y = ry * numpy.sin(t) + y44
+
+  # plot arcs
+  self.plot(arc1x, arc1y, **kwargs)
+  self.plot(arc2x, arc2y, **kwargs)
+  self.plot(arc3x, arc3y, **kwargs)
+  self.plot(arc4x, arc4y, **kwargs)
+
+  # plot lines
+  self.plot([arc1x[-1], arc2x[1]], [arc1y[-1], arc2y[1]], **kwargs)
+  self.plot([arc3x[-1], arc4x[1]], [arc3y[-1], arc4y[1]], **kwargs)
+
+  if s is not None:
+    rx = text_pad * rx
+    ry = text_pad * ry
+    x22 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) - rx * numpy.cos(theta)
+    y22 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) - ry * numpy.sin(theta)
+    arc2x = rx * numpy.cos(q - numpy.pi/2.0) + x22
+    arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
+    text_x, text_y = arc2x[-1], arc2y[-1]
+    rotation = numpy.degrees(theta) % 360.0
+    self.text(text_x, text_y, s, rotation=rotation, ha='center', va='center', fontdict=fontdict)
+
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
 for name, f in functions.items():
