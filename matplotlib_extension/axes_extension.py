@@ -616,7 +616,7 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
     arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
     text_x, text_y = arc2x[-1], arc2y[-1]
     rotation = numpy.degrees(theta) % 360.0
-    self.text(text_x, text_y, s, rotation=rotation, ha='center', va='center', fontdict=fontdict)
+    self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
 
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
