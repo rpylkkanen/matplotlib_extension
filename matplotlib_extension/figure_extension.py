@@ -11,6 +11,12 @@ class Box:
 		self.showing_annotations = False
 		self.post_update_functions = []
 
+	def __iter__(self):
+		return self.children.__iter__()
+
+	def __next__(self):
+		return self.children.__next__()
+
 	def offset_x(self):
 		if not hasattr(self, '_offset_x'):
 			self._offset_x = 0.0
