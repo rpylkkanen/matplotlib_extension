@@ -16,8 +16,7 @@ def zoom(self, fraction):
 		self.set_ylim(ymin=ymax*y2, ymax=ymax*y1)
 
 def set_panel_label(self, text, size=8, weight='semibold'):
-		size = matplotlib.rcParams.get('axes.panelsize') or size
-		size = matplotlib.rcParams.get('axes.panelweight') or weight
+		# Is it possible to set this in rcparams?
 		x = - self.left()/self.width()
 		y = 1.0 + self.top()/self.height()
 		ha = 'left'
