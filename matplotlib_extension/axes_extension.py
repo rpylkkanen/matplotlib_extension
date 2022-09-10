@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.axes
 from matplotlib_scalebar.scalebar import ScaleBar
 from inspect import isfunction, signature
@@ -14,14 +15,15 @@ def zoom(self, fraction):
 		self.set_xlim(xmin=xmax*x1, xmax=xmax*x2)
 		self.set_ylim(ymin=ymax*y2, ymax=ymax*y1)
 
-def set_panel_label(self, text):
+def set_panel_label(self, text, size=8, weight='semibold'):
+		size = matplotlib.rcParams.get('axes.panelsize') or size
+		size = matplotlib.rcParams.get('axes.panelweight') or weight
 		x = - self.left()/self.width()
 		y = 1.0 + self.top()/self.height()
 		ha = 'left'
 		va = 'top'
-		weight = 'semibold'
 		transform = self.transAxes
-		self.text(x, y, text, ha=ha, va=va, weight=weight, transform=transform)
+		self.text(x, y, text, ha=ha, va=va, weight=weight, transform=transform, size=size)
 
 def set_top_label(self, text, kwargs={}):
 		x = 0.5
