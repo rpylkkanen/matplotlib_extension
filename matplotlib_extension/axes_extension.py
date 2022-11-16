@@ -484,7 +484,7 @@ def random_data(self, color=None):
 	self.plot(x, y, 'o-', mfc='white', color=color)
 
 
-def hexagon(self, x, y, width=1.0, height=1.0, width_fill=1.0, height_fill=1.0, perspective=0.25, xpad=0.2, ypad=0.2, kwargs={}):
+def hexagon(self, x, y, width=1.0, height=1.0, width_fill=1.0, height_fill=1.0, perspective=0.25, xpad=0.2, ypad=0.2, kwargs_top={}, kwargs_bottom={}):
 
 	# Coords
 	x1, x2, x3, x4 = x - width/2, x - width/4, x + width/4, x + width/2
@@ -493,9 +493,9 @@ def hexagon(self, x, y, width=1.0, height=1.0, width_fill=1.0, height_fill=1.0, 
 	_x = [x1, x2, x3, x4]
 
 	# Fills
-	self.fill_between(_x, [y4, y3 + height*perspective, y3 + height*perspective, y4], [y4, y5 - height*perspective, y5 - height*perspective, y4], **kwargs)
+	self.fill_between(_x, [y4, y3 + height*perspective, y3 + height*perspective, y4], [y4, y5 - height*perspective, y5 - height*perspective, y4], **kwargs_top)
 
-	self.fill_between(_x, [y4, y3 + height*perspective, y3 + height*perspective, y4], [y2, y1 + height*perspective, y1 + height*perspective, y2], **kwargs)
+	self.fill_between(_x, [y4, y3 + height*perspective, y3 + height*perspective, y4], [y2, y1 + height*perspective, y1 + height*perspective, y2], **kwargs_bottom)
 
 	
 	# Top     /^^\
