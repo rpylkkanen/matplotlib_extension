@@ -4,6 +4,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from inspect import isfunction, signature
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
+import mpl_toolkits.mplot3d
 from mpl_toolkits.axes_grid1 import Divider, Size
 import numpy
 
@@ -620,11 +621,12 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
 for name, f in functions.items():
-		target = matplotlib.axes.Axes
-		if hasattr(target, name):
-				print(f'*WARNING: {target} has already attribute: {name}, skipping.')
-		else:
-				print(f'Extending {target} with .{name}{signature(f)}')
-				setattr(target, name, f)
+		targets = [matplotlib.axes.Axes, mpl_toolkits.mplot3d.axes3d.Axes3D]
+		for target in targets:
+			if hasattr(target, name):
+					print(f'*WARNING: {target} has already attribute: {name}, skipping.')
+			else:
+					print(f'Extending {target} with .{name}{signature(f)}')
+					setattr(target, name, f)
 
 
