@@ -621,7 +621,7 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
 for name, f in functions.items():
-		targets = [matplotlib.axes.Axes, mpl_toolkits.mplot3d.axes3d.Axes3D]
+		targets = [matplotlib.axes.Axes]
 		for target in targets:
 			if hasattr(target, name):
 					print(f'*WARNING: {target} has already attribute: {name}, skipping.')
