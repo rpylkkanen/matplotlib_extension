@@ -618,6 +618,90 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
     rotation = numpy.degrees(theta) % 360.0
     self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
 
+def attach(self, edge, target_ax, target_edge):
+    # Define mappings for edges to their corresponding methods
+    edge_mappings = {
+        'left': {'spacing': 'edge_left_x', 'axis': 'axis_left_x'},
+        'right': {'spacing': 'edge_right_x', 'axis': 'axis_right_x'},
+        'center': {'spacing': {'x': 'edge_center_x', 'y': 'edge_center_y'}, 
+                   'axis': {'x': 'axis_center_x', 'y': 'axis_center_y'}},
+        'top': {'spacing': 'edge_top_y', 'axis': 'axis_top_y'},
+        'bottom': {'spacing': 'edge_bottom_y', 'axis': 'axis_bottom_y'},
+    }
+
+    # Split the edge and target_edge into direction and type
+    edge_dir, edge_type = edge.split()
+    target_dir, target_type = target_edge.split()
+
+    # Determine if it's a horizontal or vertical attachment
+    is_horizontal = 'left' in (edge_dir, target_dir) or 'right' in (edge_dir, target_dir)
+    axis = 'x' if is_horizontal else 'y'
+
+    # Handle center alignments
+    if edge_dir == 'center' and target_dir == 'center':
+        # Get methods for both axes
+        target_x_method = getattr(target_ax, edge_mappings['center'][target_type]['x'])
+        target_y_method = getattr(target_ax, edge_mappings['center'][target_type]['y'])
+        
+        if edge_type == 'spacing' and target_type == 'spacing':
+            print(1)
+            self.offset_x = lambda: target_x_method() - self.width()/2
+            self.offset_y = lambda: target_y_method() - self.height()/2
+        elif edge_type == 'axis' and target_type == 'axis':
+            print(2)
+            self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
+            self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
+        elif edge_type == 'spacing' and target_type == 'axis':
+            print(3)
+            self.offset_x = lambda: target_x_method() - (self.left() + self.width() + self.right())/2
+            self.offset_y = lambda: target_y_method() - (self.bottom() + self.height() + self.top())/2
+        elif edge_type == 'axis' and target_type == 'spacing':
+            print(4)
+            self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
+            self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
+        return lambda: None
+
+    # Get the appropriate method for the target edge
+    if target_dir == 'center':
+        target_method = getattr(target_ax, edge_mappings[target_dir][target_type][axis])
+    else:
+        target_method = getattr(target_ax, edge_mappings[target_dir][target_type])
+
+    # Set the offset based on the edge type and direction
+    if is_horizontal:
+        if edge_type == 'spacing':
+            if edge_dir == 'left':
+                self.offset_x = target_method
+            elif edge_dir == 'right':
+                self.offset_x = lambda: target_method() - (self.left() + self.width() + self.right())
+            elif edge_dir == 'center':
+                self.offset_x = lambda: target_method() - self.width()/2
+        elif edge_type == 'axis':
+            if edge_dir == 'left':
+                self.offset_x = lambda: target_method() - self.left()
+            elif edge_dir == 'right':
+                self.offset_x = lambda: target_method() - (self.left() + self.width())
+            elif edge_dir == 'center':
+                self.offset_x = lambda: target_method() - (self.left() + self.width()/2)
+    else:  # vertical
+        if edge_type == 'spacing':
+            if edge_dir == 'bottom':
+                self.offset_y = target_method
+            elif edge_dir == 'top':
+                self.offset_y = lambda: target_method() - (self.bottom() + self.height() + self.top())
+            elif edge_dir == 'center':
+                self.offset_y = lambda: target_method() - self.height()/2
+        elif edge_type == 'axis':
+            if edge_dir == 'bottom':
+                self.offset_y = lambda: target_method() - self.bottom()
+            elif edge_dir == 'top':
+                self.offset_y = lambda: target_method() - (self.bottom() + self.height())
+            elif edge_dir == 'center':
+                self.offset_y = lambda: target_method() - (self.bottom() + self.height()/2)
+
+    # Return the attachment function for chaining
+    return lambda: None
+
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
 for name, f in functions.items():
