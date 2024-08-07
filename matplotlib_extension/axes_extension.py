@@ -6,6 +6,7 @@ from matplotlib.patches import Rectangle
 import mpl_toolkits.mplot3d
 from mpl_toolkits.axes_grid1 import Divider, Size
 import numpy
+import matplotlib.patheffects
 
 def zoom(self, fraction):
 		x1, x2 = fraction/2, 1 - fraction/2
@@ -32,7 +33,7 @@ def set_top_label(self, text, kwargs={}):
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, transform=transform, **kwargs)
 
-def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_data=(None, None), va='bottom', ha='center', color=dv.yellow5, font_size=9, text_lw=1, ec='k', weight='semibold'):
+def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_data=(None, None), va='bottom', ha='center', color='#ffeb3b', font_size=9, text_lw=1, ec='k', weight='semibold'):
 	
 	fig = matplotlib.pyplot.gcf()
 	
@@ -53,7 +54,7 @@ def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_dat
 	x = np.array([0, 1, 1, 0]) * x + xpad * xf + xdata/np.ptp(self.get_xlim())*self.width()*xf
 	y = np.array([0, 0, 1, 1]) * height_inches + ypad
 	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color)
-	path_effects = dv.path_effects(lw=text_lw, color=ec)
+	path_effects = [matplotlib.patheffects.withStroke(linewidth=text_lw, foreground=ec)]
 	self.text(np.mean(x), height_inches + ypad, text, ha=ha, va=va, size=font_size, transform=t, color=color, path_effects=path_effects, weight=weight)
 
 def break_spine(self, spine, aspect=1/1, color='k', d=0.015, top=True, bottom=True):
