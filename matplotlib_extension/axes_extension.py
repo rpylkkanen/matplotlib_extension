@@ -1,6 +1,5 @@
 import matplotlib
 import matplotlib.axes
-from matplotlib_scalebar.scalebar import ScaleBar
 from inspect import isfunction, signature
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
@@ -33,19 +32,29 @@ def set_top_label(self, text, kwargs={}):
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, transform=transform, **kwargs)
 
-def scalebar(self, dx, units, width_fraction, location='lower left', color="#ffeb3b", kwargs={'box_alpha': 0.0}):
-		bar = ScaleBar(
-				dx,
-				units,
-				color=color,
-				location=location,
-				width_fraction=width_fraction,
-				# box_alpha=0.0,
-				# font_properties=dict(size='small'),
-				**kwargs
-		)
-		self.add_artist(bar)
-		return bar
+def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_data=(None, None), va='bottom', ha='center', color=dv.yellow5, font_size=9, text_lw=1, ec='k', weight='semibold'):
+	
+	fig = matplotlib.pyplot.gcf()
+	
+	xdata, ydata = pad_data
+	if xdata == None:
+		xdata = self.get_xlim()[0]
+	if ydata == None:
+		ydata = self.get_ylim()[0]
+	
+	t = matplotlib.transforms.blended_transform_factory(
+			self.transData,
+			fig.dpi_scale_trans + matplotlib.transforms.ScaledTranslation(xdata, ydata, self.transData),
+	)
+
+	xf = np.ptp(self.get_xlim())/self.width()  
+	xpad, ypad = pad_inches
+
+	x = np.array([0, 1, 1, 0]) * x + xpad * xf + xdata/np.ptp(self.get_xlim())*self.width()*xf
+	y = np.array([0, 0, 1, 1]) * height_inches + ypad
+	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color)
+	path_effects = dv.path_effects(lw=text_lw, color=ec)
+	self.text(np.mean(x), height_inches + ypad, text, ha=ha, va=va, size=font_size, transform=t, color=color, path_effects=path_effects, weight=weight)
 
 def break_spine(self, spine, aspect=1/1, color='k', d=0.015, top=True, bottom=True):
 
@@ -553,154 +562,154 @@ def cylinder(self, x0, y0, width, height, top_height=None, top_color="#e0e0e0", 
 
 def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 
-  scale = min([self.width(), self.height()])
+	scale = min([self.width(), self.height()])
 
-  rx = r * numpy.ptp(self.get_xlim()) / (self.width() / scale)
-  ry = r * numpy.ptp(self.get_ylim()) / (self.height() / scale)
+	rx = r * numpy.ptp(self.get_xlim()) / (self.width() / scale)
+	ry = r * numpy.ptp(self.get_ylim()) / (self.height() / scale)
 
-  # calculate the angle
-  theta = numpy.arctan2(xy2[1] - xy1[1], xy2[0] - xy1[0])
+	# calculate the angle
+	theta = numpy.arctan2(xy2[1] - xy1[1], xy2[0] - xy1[0])
 
-  # arc1 centre
-  x11 = xy1[0] + rx * numpy.cos(theta)
-  y11 = xy1[1] + ry * numpy.sin(theta)
+	# arc1 centre
+	x11 = xy1[0] + rx * numpy.cos(theta)
+	y11 = xy1[1] + ry * numpy.sin(theta)
 
-  # arc2 centre
-  x22 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) - rx * numpy.cos(theta)
-  y22 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) - ry * numpy.sin(theta)
+	# arc2 centre
+	x22 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) - rx * numpy.cos(theta)
+	y22 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) - ry * numpy.sin(theta)
 
-  # arc3 centre
-  x33 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) + rx * numpy.cos(theta)
-  y33 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) + ry * numpy.sin(theta)
+	# arc3 centre
+	x33 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) + rx * numpy.cos(theta)
+	y33 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) + ry * numpy.sin(theta)
 
-  # arc4 centre
-  x44 = xy2[0] - rx * numpy.cos(theta)
-  y44 = xy2[1] - ry * numpy.sin(theta)
+	# arc4 centre
+	x44 = xy2[0] - rx * numpy.cos(theta)
+	y44 = xy2[1] - ry * numpy.sin(theta)
 
-  # prepare the rotated
-  q = numpy.linspace(theta, theta + numpy.pi/2.0, 50)
+	# prepare the rotated
+	q = numpy.linspace(theta, theta + numpy.pi/2.0, 50)
 
-  # reverse q
-  # t = np.flip(q) # this command is not supported by lower version of numpy
-  t = q[::-1]
+	# reverse q
+	# t = np.flip(q) # this command is not supported by lower version of numpy
+	t = q[::-1]
 
-  # arc coordinates
-  arc1x = rx * numpy.cos(t + numpy.pi/2.0) + x11
-  arc1y = ry * numpy.sin(t + numpy.pi/2.0) + y11
+	# arc coordinates
+	arc1x = rx * numpy.cos(t + numpy.pi/2.0) + x11
+	arc1y = ry * numpy.sin(t + numpy.pi/2.0) + y11
 
-  arc2x = rx * numpy.cos(q - numpy.pi/2.0) + x22
-  arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
+	arc2x = rx * numpy.cos(q - numpy.pi/2.0) + x22
+	arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
 
-  arc3x = rx * numpy.cos(q + numpy.pi) + x33
-  arc3y = ry * numpy.sin(q + numpy.pi) + y33
+	arc3x = rx * numpy.cos(q + numpy.pi) + x33
+	arc3y = ry * numpy.sin(q + numpy.pi) + y33
 
-  arc4x = rx * numpy.cos(t) + x44
-  arc4y = ry * numpy.sin(t) + y44
+	arc4x = rx * numpy.cos(t) + x44
+	arc4y = ry * numpy.sin(t) + y44
 
-  # plot arcs
-  self.plot(arc1x, arc1y, **kwargs)
-  self.plot(arc2x, arc2y, **kwargs)
-  self.plot(arc3x, arc3y, **kwargs)
-  self.plot(arc4x, arc4y, **kwargs)
+	# plot arcs
+	self.plot(arc1x, arc1y, **kwargs)
+	self.plot(arc2x, arc2y, **kwargs)
+	self.plot(arc3x, arc3y, **kwargs)
+	self.plot(arc4x, arc4y, **kwargs)
 
-  # plot lines
-  self.plot([arc1x[-1], arc2x[1]], [arc1y[-1], arc2y[1]], **kwargs)
-  self.plot([arc3x[-1], arc4x[1]], [arc3y[-1], arc4y[1]], **kwargs)
+	# plot lines
+	self.plot([arc1x[-1], arc2x[1]], [arc1y[-1], arc2y[1]], **kwargs)
+	self.plot([arc3x[-1], arc4x[1]], [arc3y[-1], arc4y[1]], **kwargs)
 
-  if s is not None:
-    rx = text_pad * rx
-    ry = text_pad * ry
-    x22 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) - rx * numpy.cos(theta)
-    y22 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) - ry * numpy.sin(theta)
-    arc2x = rx * numpy.cos(q - numpy.pi/2.0) + x22
-    arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
-    text_x, text_y = arc2x[-1], arc2y[-1]
-    rotation = numpy.degrees(theta) % 360.0
-    self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
+	if s is not None:
+		rx = text_pad * rx
+		ry = text_pad * ry
+		x22 = (xy2[0] + xy1[0]) / 2.0 - 2.0 * rx * numpy.sin(theta) - rx * numpy.cos(theta)
+		y22 = (xy2[1] + xy1[1]) / 2.0 + 2.0 * ry * numpy.cos(theta) - ry * numpy.sin(theta)
+		arc2x = rx * numpy.cos(q - numpy.pi/2.0) + x22
+		arc2y = ry * numpy.sin(q - numpy.pi/2.0) + y22
+		text_x, text_y = arc2x[-1], arc2y[-1]
+		rotation = numpy.degrees(theta) % 360.0
+		self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
 
 def attach(self, edge, target_ax, target_edge):
-    # Define mappings for edges to their corresponding methods
-    edge_mappings = {
-        'left': {'spacing': 'edge_left_x', 'axis': 'axis_left_x'},
-        'right': {'spacing': 'edge_right_x', 'axis': 'axis_right_x'},
-        'center': {'spacing': {'x': 'edge_center_x', 'y': 'edge_center_y'}, 
-                   'axis': {'x': 'axis_center_x', 'y': 'axis_center_y'}},
-        'top': {'spacing': 'edge_top_y', 'axis': 'axis_top_y'},
-        'bottom': {'spacing': 'edge_bottom_y', 'axis': 'axis_bottom_y'},
-    }
+		# Define mappings for edges to their corresponding methods
+		edge_mappings = {
+				'left': {'spacing': 'edge_left_x', 'axis': 'axis_left_x'},
+				'right': {'spacing': 'edge_right_x', 'axis': 'axis_right_x'},
+				'center': {'spacing': {'x': 'edge_center_x', 'y': 'edge_center_y'}, 
+									 'axis': {'x': 'axis_center_x', 'y': 'axis_center_y'}},
+				'top': {'spacing': 'edge_top_y', 'axis': 'axis_top_y'},
+				'bottom': {'spacing': 'edge_bottom_y', 'axis': 'axis_bottom_y'},
+		}
 
-    # Split the edge and target_edge into direction and type
-    edge_dir, edge_type = edge.split()
-    target_dir, target_type = target_edge.split()
+		# Split the edge and target_edge into direction and type
+		edge_dir, edge_type = edge.split()
+		target_dir, target_type = target_edge.split()
 
-    # Determine if it's a horizontal or vertical attachment
-    is_horizontal = 'left' in (edge_dir, target_dir) or 'right' in (edge_dir, target_dir)
-    axis = 'x' if is_horizontal else 'y'
+		# Determine if it's a horizontal or vertical attachment
+		is_horizontal = 'left' in (edge_dir, target_dir) or 'right' in (edge_dir, target_dir)
+		axis = 'x' if is_horizontal else 'y'
 
-    # Handle center alignments
-    if edge_dir == 'center' and target_dir == 'center':
-        # Get methods for both axes
-        target_x_method = getattr(target_ax, edge_mappings['center'][target_type]['x'])
-        target_y_method = getattr(target_ax, edge_mappings['center'][target_type]['y'])
-        
-        if edge_type == 'spacing' and target_type == 'spacing':
-            print(1)
-            self.offset_x = lambda: target_x_method() - self.width()/2
-            self.offset_y = lambda: target_y_method() - self.height()/2
-        elif edge_type == 'axis' and target_type == 'axis':
-            print(2)
-            self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
-            self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
-        elif edge_type == 'spacing' and target_type == 'axis':
-            print(3)
-            self.offset_x = lambda: target_x_method() - (self.left() + self.width() + self.right())/2
-            self.offset_y = lambda: target_y_method() - (self.bottom() + self.height() + self.top())/2
-        elif edge_type == 'axis' and target_type == 'spacing':
-            print(4)
-            self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
-            self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
-        return lambda: None
+		# Handle center alignments
+		if edge_dir == 'center' and target_dir == 'center':
+				# Get methods for both axes
+				target_x_method = getattr(target_ax, edge_mappings['center'][target_type]['x'])
+				target_y_method = getattr(target_ax, edge_mappings['center'][target_type]['y'])
+				
+				if edge_type == 'spacing' and target_type == 'spacing':
+						print(1)
+						self.offset_x = lambda: target_x_method() - self.width()/2
+						self.offset_y = lambda: target_y_method() - self.height()/2
+				elif edge_type == 'axis' and target_type == 'axis':
+						print(2)
+						self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
+						self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
+				elif edge_type == 'spacing' and target_type == 'axis':
+						print(3)
+						self.offset_x = lambda: target_x_method() - (self.left() + self.width() + self.right())/2
+						self.offset_y = lambda: target_y_method() - (self.bottom() + self.height() + self.top())/2
+				elif edge_type == 'axis' and target_type == 'spacing':
+						print(4)
+						self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
+						self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
+				return lambda: None
 
-    # Get the appropriate method for the target edge
-    if target_dir == 'center':
-        target_method = getattr(target_ax, edge_mappings[target_dir][target_type][axis])
-    else:
-        target_method = getattr(target_ax, edge_mappings[target_dir][target_type])
+		# Get the appropriate method for the target edge
+		if target_dir == 'center':
+				target_method = getattr(target_ax, edge_mappings[target_dir][target_type][axis])
+		else:
+				target_method = getattr(target_ax, edge_mappings[target_dir][target_type])
 
-    # Set the offset based on the edge type and direction
-    if is_horizontal:
-        if edge_type == 'spacing':
-            if edge_dir == 'left':
-                self.offset_x = target_method
-            elif edge_dir == 'right':
-                self.offset_x = lambda: target_method() - (self.left() + self.width() + self.right())
-            elif edge_dir == 'center':
-                self.offset_x = lambda: target_method() - self.width()/2
-        elif edge_type == 'axis':
-            if edge_dir == 'left':
-                self.offset_x = lambda: target_method() - self.left()
-            elif edge_dir == 'right':
-                self.offset_x = lambda: target_method() - (self.left() + self.width())
-            elif edge_dir == 'center':
-                self.offset_x = lambda: target_method() - (self.left() + self.width()/2)
-    else:  # vertical
-        if edge_type == 'spacing':
-            if edge_dir == 'bottom':
-                self.offset_y = target_method
-            elif edge_dir == 'top':
-                self.offset_y = lambda: target_method() - (self.bottom() + self.height() + self.top())
-            elif edge_dir == 'center':
-                self.offset_y = lambda: target_method() - self.height()/2
-        elif edge_type == 'axis':
-            if edge_dir == 'bottom':
-                self.offset_y = lambda: target_method() - self.bottom()
-            elif edge_dir == 'top':
-                self.offset_y = lambda: target_method() - (self.bottom() + self.height())
-            elif edge_dir == 'center':
-                self.offset_y = lambda: target_method() - (self.bottom() + self.height()/2)
+		# Set the offset based on the edge type and direction
+		if is_horizontal:
+				if edge_type == 'spacing':
+						if edge_dir == 'left':
+								self.offset_x = target_method
+						elif edge_dir == 'right':
+								self.offset_x = lambda: target_method() - (self.left() + self.width() + self.right())
+						elif edge_dir == 'center':
+								self.offset_x = lambda: target_method() - self.width()/2
+				elif edge_type == 'axis':
+						if edge_dir == 'left':
+								self.offset_x = lambda: target_method() - self.left()
+						elif edge_dir == 'right':
+								self.offset_x = lambda: target_method() - (self.left() + self.width())
+						elif edge_dir == 'center':
+								self.offset_x = lambda: target_method() - (self.left() + self.width()/2)
+		else:  # vertical
+				if edge_type == 'spacing':
+						if edge_dir == 'bottom':
+								self.offset_y = target_method
+						elif edge_dir == 'top':
+								self.offset_y = lambda: target_method() - (self.bottom() + self.height() + self.top())
+						elif edge_dir == 'center':
+								self.offset_y = lambda: target_method() - self.height()/2
+				elif edge_type == 'axis':
+						if edge_dir == 'bottom':
+								self.offset_y = lambda: target_method() - self.bottom()
+						elif edge_dir == 'top':
+								self.offset_y = lambda: target_method() - (self.bottom() + self.height())
+						elif edge_dir == 'center':
+								self.offset_y = lambda: target_method() - (self.bottom() + self.height()/2)
 
-    # Return the attachment function for chaining
-    return lambda: None
+		# Return the attachment function for chaining
+		return lambda: None
 
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
