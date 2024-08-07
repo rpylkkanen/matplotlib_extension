@@ -16,7 +16,7 @@ def zoom(self, fraction):
 		self.set_xlim(xmin=xmax*x1, xmax=xmax*x2)
 		self.set_ylim(ymin=ymax*y2, ymax=ymax*y1)
 
-def set_panel_label(self, text, size=8, weight='semibold'):
+def set_panel_label(self, text, size='medium', weight='semibold'):
 		# Is it possible to set this in rcparams?
 		x = - self.left()/self.width()
 		y = 1.0 + self.top()/self.height()
