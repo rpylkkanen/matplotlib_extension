@@ -628,7 +628,7 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 		rotation = numpy.degrees(theta) % 360.0
 		self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
 
-def attach(self, edge, target_ax, target_edge, clip=False):
+def attach(self, edge, target_ax, target_edge, clip=True):
 
 		print('Attaching:', self, edge, target_ax, target_edge)
 		# Define mappings for edges to their corresponding methods
@@ -713,7 +713,7 @@ def attach(self, edge, target_ax, target_edge, clip=False):
 			f.clip()
 		return lambda: None
 
-def multi_attach(self, target_ax, line, clip=False):
+def multi_attach(self, target_ax, line, clip=True):
 
 	lrtbc = {'l': 'left', 'r': 'right', 't': 'top', 'b': 'bottom', 'c': 'center'}
 	sa = {'s': 'spacing', 'a': 'axis'}
