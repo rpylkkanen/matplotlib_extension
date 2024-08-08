@@ -717,7 +717,7 @@ def multi_attach(self, target_ax, line):
 
   n = 2
   chunks = [line[i:i+n] for i in range(0, len(line), n)]
-  chunks = np.array(chunks).reshape(2, -1)
+  chunks = numpy.array(chunks).reshape(2, -1)
   for edge, target_edge in chunks:
     edge = lrtbc[edge[0]] + ' ' + sa[edge[1]]
     target_edge = lrtbc[target_edge[0]] + ' ' + sa[target_edge[1]]
