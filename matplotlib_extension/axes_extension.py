@@ -51,7 +51,7 @@ def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_dat
 	xf = numpy.ptp(self.get_xlim())/self.width()  
 	xpad, ypad = pad_inches
 
-	x = numpy.array([0, 1, 1, 0]) * x + xpad * xf + xdata/np.ptp(self.get_xlim())*self.width()*xf
+	x = numpy.array([0, 1, 1, 0]) * x + xpad * xf + xdata/numpy.ptp(self.get_xlim())*self.width()*xf
 	y = numpy.array([0, 0, 1, 1]) * height_inches + ypad
 	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color)
 	path_effects = [matplotlib.patheffects.withStroke(linewidth=text_lw, foreground=ec)]
