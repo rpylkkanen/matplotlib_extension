@@ -42,9 +42,9 @@ def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_dat
 
 	xdata, ydata = pad_data
 	if xdata == None:
-	xdata = self.get_xlim()[0]
+		xdata = self.get_xlim()[0]
 	if ydata == None:
-	ydata = self.get_ylim()[0]
+		ydata = self.get_ylim()[0]
 
 	t = matplotlib.transforms.blended_transform_factory(
 		self.transData,
