@@ -710,6 +710,19 @@ def attach(self, edge, target_ax, target_edge):
 		# Return the attachment function for chaining
 		return lambda: None
 
+def multi_attach(self, target_ax, line):
+
+  lrtbc = {'l': 'left', 'r': 'right', 't': 'top', 'b': 'bottom', 'c': 'center'}
+  sa = {'s': 'spacing', 'a': 'axis'}
+
+  n = 2
+  chunks = [line[i:i+n] for i in range(0, len(line), n)]
+  chunks = np.array(chunks).reshape(2, -1)
+  for edge, target_edge in chunks:
+    edge = lrtbc[edge[0]] + ' ' + sa[edge[1]]
+    target_edge = lrtbc[target_edge[0]] + ' ' + sa[target_edge[1]]
+    self.attach(edge, target_ax, target_edge)
+
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
 for name, f in functions.items():
