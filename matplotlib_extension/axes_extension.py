@@ -629,6 +629,8 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 		self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
 
 def attach(self, edge, target_ax, target_edge):
+
+		print('Attaching:', self, edge, target_ax, target_edge)
 		# Define mappings for edges to their corresponding methods
 		edge_mappings = {
 				'left': {'spacing': 'edge_left_x', 'axis': 'axis_left_x'},
@@ -654,19 +656,15 @@ def attach(self, edge, target_ax, target_edge):
 				target_y_method = getattr(target_ax, edge_mappings['center'][target_type]['y'])
 				
 				if edge_type == 'spacing' and target_type == 'spacing':
-						print(1)
 						self.offset_x = lambda: target_x_method() - self.width()/2
 						self.offset_y = lambda: target_y_method() - self.height()/2
 				elif edge_type == 'axis' and target_type == 'axis':
-						print(2)
 						self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
 						self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
 				elif edge_type == 'spacing' and target_type == 'axis':
-						print(3)
 						self.offset_x = lambda: target_x_method() - (self.left() + self.width() + self.right())/2
 						self.offset_y = lambda: target_y_method() - (self.bottom() + self.height() + self.top())/2
 				elif edge_type == 'axis' and target_type == 'spacing':
-						print(4)
 						self.offset_x = lambda: target_x_method() - (self.left() + self.width()/2)
 						self.offset_y = lambda: target_y_method() - (self.bottom() + self.height()/2)
 				return lambda: None
