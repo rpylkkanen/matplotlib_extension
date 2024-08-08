@@ -48,14 +48,14 @@ def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_dat
 			fig.dpi_scale_trans + matplotlib.transforms.ScaledTranslation(xdata, ydata, self.transData),
 	)
 
-	xf = np.ptp(self.get_xlim())/self.width()  
+	xf = numpy.ptp(self.get_xlim())/self.width()  
 	xpad, ypad = pad_inches
 
-	x = np.array([0, 1, 1, 0]) * x + xpad * xf + xdata/np.ptp(self.get_xlim())*self.width()*xf
-	y = np.array([0, 0, 1, 1]) * height_inches + ypad
+	x = numpy.array([0, 1, 1, 0]) * x + xpad * xf + xdata/np.ptp(self.get_xlim())*self.width()*xf
+	y = numpy.array([0, 0, 1, 1]) * height_inches + ypad
 	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color)
 	path_effects = [matplotlib.patheffects.withStroke(linewidth=text_lw, foreground=ec)]
-	self.text(np.mean(x), height_inches + ypad, text, ha=ha, va=va, size=font_size, transform=t, color=color, path_effects=path_effects, weight=weight)
+	self.text(numpy.mean(x), height_inches + ypad, text, ha=ha, va=va, size=font_size, transform=t, color=color, path_effects=path_effects, weight=weight)
 
 def break_spine(self, spine, aspect=1/1, color='k', d=0.015, top=True, bottom=True):
 
