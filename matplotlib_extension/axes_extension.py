@@ -630,7 +630,6 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 
 def attach(self, edge, target_ax, target_edge, clip=True):
 
-		print('Attaching:', self, edge, target_ax, target_edge)
 		# Define mappings for edges to their corresponding methods
 		edge_mappings = {
 				'left': {'spacing': 'edge_left_x', 'axis': 'axis_left_x'},
@@ -713,14 +712,14 @@ def attach(self, edge, target_ax, target_edge, clip=True):
 			f.clip()
 		return lambda: None
 
-def multi_attach(self, target_ax, line, clip=True):
+def attachkw(self, target_ax, line, clip=True):
 
 	lrtbc = {'l': 'left', 'r': 'right', 't': 'top', 'b': 'bottom', 'c': 'center'}
 	sa = {'s': 'spacing', 'a': 'axis'}
 
 	n = 2
 	chunks = [line[i:i+n] for i in range(0, len(line), n)]
-	chunks = numpy.array(chunks).reshape(2, -1)
+	chunks = numpy.array(chunks).reshape(-1, 2)
 	for edge, target_edge in chunks:
 		edge = lrtbc[edge[0]] + ' ' + sa[edge[1]]
 		target_edge = lrtbc[target_edge[0]] + ' ' + sa[target_edge[1]]
