@@ -46,6 +46,8 @@ def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_dat
 
 	xf = numpy.ptp(self.get_xlim())/self.width()  
 	xpad, ypad = pad_inches
+	if xdata is None:
+		xdata = 0
 
 	x = numpy.array([0, 1, 1, 0]) * x + xpad * xf + xdata/numpy.ptp(self.get_xlim())*self.width()*xf
 	y = numpy.array([0, 0, 1, 1]) * height_inches + ypad
