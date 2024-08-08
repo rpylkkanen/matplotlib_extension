@@ -35,21 +35,27 @@ def set_top_label(self, text, kwargs={}):
 
 def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_data=(None, None), va='bottom', ha='center', color='#ffeb3b', font_size=9, text_lw=1, ec='k', weight='semibold'):
 	
+	self.set_xlim(self.get_xlim())
+	self.set_ylim(self.get_ylim())
+
 	fig = matplotlib.pyplot.gcf()
-	
+
 	xdata, ydata = pad_data
-	
+	if xdata == None:
+	xdata = self.get_xlim()[0]
+	if ydata == None:
+	ydata = self.get_ylim()[0]
+
 	t = matplotlib.transforms.blended_transform_factory(
-			self.transData,
-			fig.dpi_scale_trans + matplotlib.transforms.ScaledTranslation(xdata, ydata, self.transData),
+		self.transData,
+		fig.dpi_scale_trans + matplotlib.transforms.ScaledTranslation(xdata, ydata, self.transData),
 	)
 
 	xf = numpy.ptp(self.get_xlim())/self.width()  
 	xpad, ypad = pad_inches
-	if xdata is None:
-		xdata = 0
+	xpad_data = xpad * xf
 
-	x = numpy.array([0, 1, 1, 0]) * x + xpad * xf + xdata/numpy.ptp(self.get_xlim())*self.width()*xf
+	x = numpy.array([0, 1, 1, 0]) * x + xpad_data + xdata
 	y = numpy.array([0, 0, 1, 1]) * height_inches + ypad
 	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color)
 	path_effects = [matplotlib.patheffects.withStroke(linewidth=text_lw, foreground=ec)]
