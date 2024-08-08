@@ -628,7 +628,7 @@ def brace(self, xy1, xy2, s=None, r=0.05, text_pad=1.5, fontdict={}, **kwargs):
 		rotation = numpy.degrees(theta) % 360.0
 		self.text(text_x, text_y, s, rotation=rotation, rotation_mode='anchor', ha='center', va='center', fontdict=fontdict)
 
-def attach(self, edge, target_ax, target_edge):
+def attach(self, edge, target_ax, target_edge, clip=False):
 
 		print('Attaching:', self, edge, target_ax, target_edge)
 		# Define mappings for edges to their corresponding methods
@@ -708,9 +708,12 @@ def attach(self, edge, target_ax, target_edge):
 								self.offset_y = lambda: target_method() - (self.bottom() + self.height()/2)
 
 		# Return the attachment function for chaining
+		if clip:
+			f = self.get_figure()
+			f.clip()
 		return lambda: None
 
-def multi_attach(self, target_ax, line):
+def multi_attach(self, target_ax, line, clip=False):
 
   lrtbc = {'l': 'left', 'r': 'right', 't': 'top', 'b': 'bottom', 'c': 'center'}
   sa = {'s': 'spacing', 'a': 'axis'}
@@ -721,7 +724,10 @@ def multi_attach(self, target_ax, line):
   for edge, target_edge in chunks:
     edge = lrtbc[edge[0]] + ' ' + sa[edge[1]]
     target_edge = lrtbc[target_edge[0]] + ' ' + sa[target_edge[1]]
-    self.attach(edge, target_ax, target_edge)
+    self.attach(edge, target_ax, target_edge, clip=False)
+  if clip:
+	f = self.get_figure()
+	f.clip()
 
 functions = {name: thing for (name, thing) in locals().items() if isfunction(thing) and thing not in [isfunction, signature]}
 
