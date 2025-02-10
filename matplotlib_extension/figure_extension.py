@@ -136,7 +136,7 @@ class VBox(Box):
 		for fun in self.post_update_functions:
 			fun()
 
-def ax(self, width=1.8, height=1.8, spacings=0.025, left=None, right=None, top=None, bottom=None):
+def ax(self, width=2.4, height=2.4, spacings=0.05, left=0.8, right=0.6, top=0.4, bottom=0.6):
 
 		h = [Size.Fixed(spacings), Size.Fixed(width)]
 		v = [Size.Fixed(spacings), Size.Fixed(height)]
