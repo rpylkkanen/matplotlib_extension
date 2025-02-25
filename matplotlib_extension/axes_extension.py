@@ -33,8 +33,12 @@ def set_top_label(self, text, kwargs={}):
 		transform = self.transAxes
 		self.text(x, y, text, ha=ha, va=va, transform=transform, **kwargs)
 
-def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_data=(None, None), va='bottom', ha='center', color='#ffeb3b', font_size=9, text_lw=1, ec='k', weight='semibold'):
+def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), lw=None, pad_data=(None, None), va='bottom', ha='center', color='#ffeb3b', font_size=9, text_lw=1, ec='k', weight='semibold'):
 	
+	from matplotlib import rcParams
+	lw = lw or matplotlib.rcParams['axes.linewidth']
+	text_lw = lw * 2
+
 	self.set_xlim(self.get_xlim())
 	self.set_ylim(self.get_ylim())
 
@@ -57,7 +61,7 @@ def scalebar(self, x, text, height_inches=0.05, pad_inches=(0.05, 0.05), pad_dat
 
 	x = numpy.array([0, 1, 1, 0]) * x + xpad_data + xdata
 	y = numpy.array([0, 0, 1, 1]) * height_inches + ypad
-	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color)
+	self.fill(x, y, ec='k', transform=t, clip_on=False, fc=color, lw=lw)
 	path_effects = [matplotlib.patheffects.withStroke(linewidth=text_lw, foreground=ec)]
 	self.text(numpy.mean(x), height_inches + ypad, text, ha=ha, va=va, size=font_size, transform=t, color=color, path_effects=path_effects, weight=weight)
 
